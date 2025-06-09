@@ -1,1 +1,38 @@
 print "hello world";
+print 123.56;
+
+fun addPair(a, b) {
+    return a + b;
+}
+
+fun identity(a) {
+    return a;
+}
+
+class Breakfast {
+    init(meat, bread) {
+        this.meat = meat;
+        this.bread = bread;
+    }
+    cook() {
+        print "Eggs a-fryin'!";
+    }
+
+    serve(who) {
+        print "Enjoy your breakfast, " + who + ".";
+    }
+}
+
+var baconAndToast = Breakfast("bacon", "toast");
+baconAndToast.serve("Dear Reader");
+// "Enjoy your bacon and toast, Dear Reader."
+
+breakfast.meat = "sausage";
+breakfast.bread = "sourdough";
+
+class Brunch < Breakfast {
+    init(meat, bread, drink) {
+        super.init(meat, bread);
+        this.drink = drink;
+    }
+}

@@ -1,5 +1,3 @@
-let hasError: Ref[Bool] = { val: false }
-
 fn main {
     let args = @env.args()
     println(args)
@@ -10,21 +8,25 @@ fn main {
 
     let file_path = args[1]
 
-    let file= @fs.read_file_to_string?(file_path);
+    let file = @fs.read_file_to_string?(file_path);
     if file.is_err() {
         println("Error reading file: \{file_path}")
         return
     }
     println("Reading source code from \{file_path}")
     
-    let source = file.unwrap();
-    println(source);
-}
+    let source = file.unwrap()
+    let scanner = @lib.Scanner::new(source)
+    let tokens = scanner.scan_tokens()
 
-fn error(line: Int, message: String) -> Unit {
-    report(line, "", message)
-}
+    match @lib.errorCount {
+        { val: 0 } => println("Scanning completed successfully.\n")
+        { val: total } => println("\{total} errors found during scanning.\n")
+    }
 
-fn report(line: Int, location: String, message: String) -> Unit {
-    println("[line \{line}] Error \{location}: \{message}")
+    for tokenIdx, token in tokens {
+        println("\{tokenIdx}: \{token}")
+    }
+
+    println("\nTotal tokens: \{tokens.length()}")
 }
