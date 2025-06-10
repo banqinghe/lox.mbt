@@ -107,7 +107,7 @@ fn Scanner::string(scanner: Scanner) -> Unit {
     ignore(scanner.advance())
 
     let string_content = scanner.source.substring(start=scanner.start + 1, end=scanner.current - 1)
-    scanner.add_token(STRING, LiteralString(string_content), start_column=start_column)
+    scanner.add_token(STRING, Literal::String(string_content), start_column=start_column)
 }
 
 fn Scanner::number(scanner: Scanner) -> Unit {
@@ -134,7 +134,7 @@ fn Scanner::number(scanner: Scanner) -> Unit {
 
     scanner.add_token(
         NUMBER,
-        LiteralNumber(actual_number.unwrap()),
+        Literal::Number(actual_number.unwrap()),
         start_column=start_column
     )
 }
@@ -153,49 +153,49 @@ fn Scanner::identifier(scanner: Scanner) -> Unit {
     }
     scanner.add_token(
         token_type,
-        LiteralNil, // Identifiers do not have a literal value.
+        Literal::Nil, // Identifiers do not have a literal value.
         start_column=start_column
     )
 }
 
 fn Scanner::scan_token(scanner: Scanner) -> Unit {
     match scanner.advance() {
-        '(' => scanner.add_token(LEFT_PAREN, LiteralNil)
-        ')' => scanner.add_token(RIGHT_PAREN, LiteralNil)
-        '{' => scanner.add_token(LEFT_BRACE, LiteralNil)
-        '}' => scanner.add_token(RIGHT_BRACE, LiteralNil)
-        ',' => scanner.add_token(COMMA, LiteralNil)
-        '.' => scanner.add_token(DOT, LiteralNil)
-        '-' => scanner.add_token(MINUS, LiteralNil)
-        '+' => scanner.add_token(PLUS, LiteralNil)
-        ';' => scanner.add_token(SEMICOLON, LiteralNil)
-        '*' => scanner.add_token(STAR, LiteralNil)
+        '(' => scanner.add_token(LEFT_PAREN, Literal::Nil)
+        ')' => scanner.add_token(RIGHT_PAREN, Literal::Nil)
+        '{' => scanner.add_token(LEFT_BRACE, Literal::Nil)
+        '}' => scanner.add_token(RIGHT_BRACE, Literal::Nil)
+        ',' => scanner.add_token(COMMA, Literal::Nil)
+        '.' => scanner.add_token(DOT, Literal::Nil)
+        '-' => scanner.add_token(MINUS, Literal::Nil)
+        '+' => scanner.add_token(PLUS, Literal::Nil)
+        ';' => scanner.add_token(SEMICOLON, Literal::Nil)
+        '*' => scanner.add_token(STAR, Literal::Nil)
         '!' => {
             if scanner.match_next('=') {
-                scanner.add_token(BANG_EQUAL, LiteralNil, start_column=scanner.column - 1)
+                scanner.add_token(BANG_EQUAL, Literal::Nil, start_column=scanner.column - 1)
             } else {
-                scanner.add_token(BANG, LiteralNil)
+                scanner.add_token(BANG, Literal::Nil)
             }
         }
         '=' => {
             if scanner.match_next('=') {
-                scanner.add_token(EQUAL_EQUAL, LiteralNil, start_column=scanner.column - 1)
+                scanner.add_token(EQUAL_EQUAL, Literal::Nil, start_column=scanner.column - 1)
             } else {
-                scanner.add_token(EQUAL, LiteralNil)
+                scanner.add_token(EQUAL, Literal::Nil)
             }
         }
         '<' => {
             if scanner.match_next('=') {
-                scanner.add_token(LESS_EQUAL, LiteralNil, start_column=scanner.column - 1)
+                scanner.add_token(LESS_EQUAL, Literal::Nil, start_column=scanner.column - 1)
             } else {
-                scanner.add_token(LESS, LiteralNil)
+                scanner.add_token(LESS, Literal::Nil)
             }
         }
         '>' => {
             if scanner.match_next('=') {
-                scanner.add_token(GREATER_EQUAL, LiteralNil, start_column=scanner.column - 1)
+                scanner.add_token(GREATER_EQUAL, Literal::Nil, start_column=scanner.column - 1)
             } else {
-                scanner.add_token(GREATER, LiteralNil)
+                scanner.add_token(GREATER, Literal::Nil)
             }
         }
         '/' => {
@@ -215,7 +215,7 @@ fn Scanner::scan_token(scanner: Scanner) -> Unit {
                     ignore(scanner.advance())
                 }
             } else {
-                scanner.add_token(SLASH, LiteralNil)
+                scanner.add_token(SLASH, Literal::Nil)
             }
         }
         '"' => {
@@ -250,6 +250,6 @@ pub fn Scanner::scan_tokens(scanner: Scanner) -> Array[Token] {
         scanner.start = scanner.current
         scanner.scan_token()
     }
-    scanner.add_token(EOF, LiteralNil)
+    scanner.add_token(EOF, Literal::Nil)
     scanner.tokens
 }

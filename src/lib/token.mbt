@@ -68,9 +68,9 @@ pub let keywords: Map[String, TokenType] = Map::of([
 ]);
 
 pub(all) enum Literal {
-    LiteralString(String)
-    LiteralNumber(Double)
-    LiteralNil
+    String(String)
+    Number(Double)
+    Nil
 } derive(Show, Eq)
 
 pub struct Token {
