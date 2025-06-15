@@ -8,6 +8,8 @@ pub(all) enum TokenType {
     DOT
     MINUS
     PLUS
+    QUESTION
+    COLON
     SEMICOLON
     SLASH
     STAR
@@ -70,6 +72,7 @@ pub let keywords: Map[String, TokenType] = Map::of([
 pub(all) enum Literal {
     String(String)
     Number(Double)
+    Boolean(Bool)
     Nil
 } derive(Show, Eq)
 

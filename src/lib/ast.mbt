@@ -3,7 +3,8 @@ pub(all) enum Expression {
     Grouping(expression~: Expression)
     Literal(value~: Literal)
     Unary(operator~: Token, right~: Expression)
-}
+    Conditional(condition~: Expression, consequent~: Expression, alternative~: Expression)
+} derive(Eq)
 
 ///| pretty print for each expression
 pub impl Show for Expression with output(self, logger) {
@@ -33,6 +34,7 @@ pub impl Show for Expression with output(self, logger) {
             match value {
                 Literal::String(string) => logger.write_string(string)
                 Literal::Number(number) => logger.write_string(number.to_string())
+                Literal::Boolean(boolean) => logger.write_string(boolean.to_string())
                 Literal::Nil => logger.write_string("nil")
             }
         }
@@ -44,6 +46,19 @@ pub impl Show for Expression with output(self, logger) {
                 ..write_char(' ')
                 ..write_string(right.to_string())
                 ..write_char(')')
+        }
+        /// (condition consequent alternative)
+        Expression::Conditional(condition~, consequent~, alternative~) => {
+            logger
+                ..write_char('(')
+                ..write_string("conditional")
+                ..write_char(' ')
+                ..write_string(condition.to_string())
+                ..write_string(" (")
+                ..write_string(consequent.to_string())
+                ..write_string(" or ")
+                ..write_string(alternative.to_string())
+                ..write_string("))")
         }
     }
 }

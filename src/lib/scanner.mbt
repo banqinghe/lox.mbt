@@ -33,7 +33,12 @@ fn Scanner::is_at_end(scanner: Scanner) -> Bool {
     scanner.current >= scanner.source.length()
 }
 
-fn Scanner::add_token(scanner: Scanner, token_type: TokenType, literal: Literal, start_column~: Int = scanner.column) -> Unit {
+fn Scanner::add_token(scanner: Scanner, token_type: TokenType, literal: Literal, start_column?: Int) -> Unit {
+    let start_column = match start_column {
+        Some(column) => column
+        None => scanner.column
+    }
+
     let (lexeme, column) = match token_type {
         EOF => ("", scanner.column + 1)
         _ => (
@@ -129,7 +134,9 @@ fn Scanner::number(scanner: Scanner) -> Unit {
         consume_digits(scanner)
     }
 
-    let actual_number = @strconv.parse_double?(scanner.source.substring(start=scanner.start, end=scanner.current))
+    let actual_number = try? @strconv.parse_double(
+        scanner.source.substring(start=scanner.start, end=scanner.current)
+    )
     guard actual_number.is_ok()
 
     scanner.add_token(
@@ -151,9 +158,14 @@ fn Scanner::identifier(scanner: Scanner) -> Unit {
         Some(token_type) => token_type
         None => IDENTIFIER
     }
+    let literal = match token_type {
+        TRUE => Literal::Boolean(true)
+        FALSE => Literal::Boolean(false)
+        _ => Literal::Nil // Other keywords do not have a literal value.
+    }
     scanner.add_token(
         token_type,
-        Literal::Nil, // Identifiers do not have a literal value.
+        literal,
         start_column=start_column
     )
 }
@@ -170,6 +182,8 @@ fn Scanner::scan_token(scanner: Scanner) -> Unit {
         '+' => scanner.add_token(PLUS, Literal::Nil)
         ';' => scanner.add_token(SEMICOLON, Literal::Nil)
         '*' => scanner.add_token(STAR, Literal::Nil)
+        '?' => scanner.add_token(QUESTION, Literal::Nil)
+        ':' => scanner.add_token(COLON, Literal::Nil)
         '!' => {
             if scanner.match_next('=') {
                 scanner.add_token(BANG_EQUAL, Literal::Nil, start_column=scanner.column - 1)

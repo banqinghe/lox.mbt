@@ -1,5 +1,5 @@
 test "operators" {
-    let scanner = Scanner::new("! != = == > >= < <=")
+    let scanner = Scanner::new("! != = == > >= < <= ? :")
     let actual_tokens = scanner.scan_tokens()
     let expected_tokens = [
         Token::new(BANG, "!", Literal::Nil, 1, 1),
@@ -10,9 +10,11 @@ test "operators" {
         Token::new(GREATER_EQUAL, ">=", Literal::Nil, 1, 13),
         Token::new(LESS, "<", Literal::Nil, 1, 16),
         Token::new(LESS_EQUAL, "<=", Literal::Nil, 1, 18),
-        Token::new(EOF, "", Literal::Nil, 1, 20),
+        Token::new(QUESTION, "?", Literal::Nil, 1, 21),
+        Token::new(COLON, ":", Literal::Nil, 1, 23),
+        Token::new(EOF, "", Literal::Nil, 1, 24),
     ]
-    assert_eq!(actual_tokens, expected_tokens)
+    assert_eq(actual_tokens, expected_tokens)
 }
 
 // I don't want to get annoying error messages for unexpected characters,
@@ -31,7 +33,7 @@ test "operators" {
 //         Token::new(STAR, "*", Literal::Nil, 2, 7),
 //         Token::new(EOF, "", Literal::Nil, 2, 8),
 //     ]
-//     assert_eq!(actual_tokens, expected_tokens)
+//     assert_eq(actual_tokens, expected_tokens)
 // }
 
 test "comments" {
@@ -41,7 +43,7 @@ test "comments" {
     let expected_tokens = [
         Token::new(EOF, "", Literal::Nil, 1, 6),
     ]
-    assert_eq!(actual_tokens, expected_tokens)
+    assert_eq(actual_tokens, expected_tokens)
 }
 
 test "lines with comments" {
@@ -73,7 +75,7 @@ test "lines with comments" {
         Token::new(IDENTIFIER, "a", Literal::Nil, 4, 16),
         Token::new(EOF, "", Literal::Nil, 4, 17),
     ]
-    assert_eq!(actual_tokens, expected_tokens)
+    assert_eq(actual_tokens, expected_tokens)
 }
 
 test "string literals" {
@@ -85,7 +87,7 @@ test "string literals" {
         Token::new(STRING, "\"moon\"", Literal::String("moon".to_string()), 1, 17),
         Token::new(EOF, "", Literal::Nil, 1, 23),
     ]
-    assert_eq!(actual_tokens, expected_tokens)
+    assert_eq(actual_tokens, expected_tokens)
 }
 
 test "number literals" {
@@ -99,7 +101,7 @@ test "number literals" {
         Token::new(NUMBER, "213", Literal::Number(213.0), 2, 2),
         Token::new(EOF, "", Literal::Nil, 2, 5),
     ]
-    assert_eq!(actual_tokens, expected_tokens)
+    assert_eq(actual_tokens, expected_tokens)
 }
 
 test "identifiers and keywords" {
@@ -114,7 +116,7 @@ test "identifiers and keywords" {
         Token::new(AND, "and", Literal::Nil, 1, 1),
         Token::new(CLASS, "class", Literal::Nil, 1, 5),
         Token::new(ELSE, "else", Literal::Nil, 1, 11),
-        Token::new(FALSE, "false", Literal::Nil, 1, 16),
+        Token::new(FALSE, "false", Literal::Boolean(false), 1, 16),
         Token::new(FUN, "fun", Literal::Nil, 1, 22),
         Token::new(FOR, "for", Literal::Nil, 1, 26),
         Token::new(NIL, "nil", Literal::Nil, 2, 1),
@@ -123,17 +125,17 @@ test "identifiers and keywords" {
         Token::new(RETURN, "return", Literal::Nil, 2, 14),
         Token::new(SUPER, "super", Literal::Nil, 2, 21),
         Token::new(THIS, "this", Literal::Nil, 2, 27),
-        Token::new(TRUE, "true", Literal::Nil, 3, 1),
+        Token::new(TRUE, "true", Literal::Boolean(true), 3, 1),
         Token::new(VAR, "var", Literal::Nil, 3, 6),
         Token::new(IDENTIFIER, "myVar", Literal::Nil, 3, 10),
         Token::new(IF, "if", Literal::Nil, 3, 16),
         Token::new(ELSE, "else", Literal::Nil, 3, 19),
-        Token::new(TRUE, "true", Literal::Nil, 3, 24),
-        Token::new(FALSE, "false", Literal::Nil, 3, 29),
+        Token::new(TRUE, "true", Literal::Boolean(true), 3, 24),
+        Token::new(FALSE, "false", Literal::Boolean(false), 3, 29),
         Token::new(NIL, "nil", Literal::Nil, 3, 35),
         Token::new(IDENTIFIER, "truefalse", Literal::Nil, 4, 1),
         Token::new(IDENTIFIER, "printFoo", Literal::Nil, 4, 11),
         Token::new(EOF, "", Literal::Nil, 4, 19),
     ]
-    assert_eq!(actual_tokens, expected_tokens)
+    assert_eq(actual_tokens, expected_tokens)
 }
