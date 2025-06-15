@@ -104,7 +104,7 @@ fn Scanner::string(scanner: Scanner) -> Unit {
         ignore(scanner.advance())
     }
     if scanner.is_at_end() {
-        error(scanner.line, "Unterminated string.")
+        report(scanner.line, start_column, "", "Unterminated string.")
         return
     }
 
@@ -252,7 +252,7 @@ fn Scanner::scan_token(scanner: Scanner) -> Unit {
                     scanner.identifier()
                 }
                 _ => {
-                    error(scanner.line, "Unexpected character: \{scanner.source.char_at(scanner.current - 1)} line \{scanner.line}, column \{scanner.column}")
+                    report(scanner.line, scanner.column, "at '\{scanner.source.char_at(scanner.current - 1)}'", "Unexpected character.")
                 }
             }
         }

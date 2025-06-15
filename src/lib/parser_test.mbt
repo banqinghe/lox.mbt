@@ -99,3 +99,51 @@ test "conditional expression" {
 
     assert_eq(result, expected)
 }
+
+test "missing left operand +" {
+    let source = "+-1"
+    let scanner = Scanner::new(source)
+    let tokens = scanner.scan_tokens()
+    let parser = Parser::new(tokens)
+
+    // Error at '+': Missing left operand for '+' operator.
+    let result = parser.expression()
+
+    inspect(result, content="1")
+}
+
+test "missing left operand >=" {
+    let source = ">= 1"
+    let scanner = Scanner::new(source)
+    let tokens = scanner.scan_tokens()
+    let parser = Parser::new(tokens)
+
+    // Error at '>=': Missing left operand for '>=' operator.
+    let result = parser.expression()
+
+    inspect(result, content="1")
+}
+
+test "missing left operand ==" {
+    let source = "== 1"
+    let scanner = Scanner::new(source)
+    let tokens = scanner.scan_tokens()
+    let parser = Parser::new(tokens)
+
+    // Error at '==': Missing left operand for '==' operator.
+    let result = parser.expression()
+
+    inspect(result, content="1")
+}
+
+test "missing left operand ," {
+    let source = ", 1"
+    let scanner = Scanner::new(source)
+    let tokens = scanner.scan_tokens()
+    let parser = Parser::new(tokens)
+
+    // Error at ',': Missing left operand for ',' operator.
+    let result = parser.expression()
+
+    inspect(result, content="1")
+}

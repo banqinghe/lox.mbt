@@ -18,8 +18,9 @@ pub fn Parser::parse(p: Self) -> Expression {
     let expr = try? p.expression()
     match expr {
         Ok(expr) => expr
-        Err(_) => {
+        Err(err) => {
             // TODO: do not panic and synchronize instead
+            println("parse error: \{err}")
             panic()
         }
     }
@@ -67,13 +68,18 @@ fn Parser::matchTo(p: Self, token_types: Array[TokenType]) -> Bool {
     false
 }
 
-///| Log a parser error with the given token and message, return a ParserError.
-fn Parser::error(_: Self, token: Token, message: String) -> ParserError {
+///| Log a parser error with the given line, where it occurred, and the message.
+fn Parser::report_error(_: Self, token: Token, message: String) -> Unit {
     if (token.token_type == TokenType::EOF) {
-        report(token.line, "at end", message)
+        report(token.line, token.column, "at end", message)
     } else {
-        report(token.line, "at '\{token.lexeme}'", message)
+        report(token.line, token.column, "at '\{token.lexeme}'", message)
     }
+}
+
+///| Log error, return a ParserError.
+fn Parser::error(p: Self, token: Token, message: String) -> ParserError {
+    p.report_error(token, message)
     ParserError((token, message))
 }
 
@@ -107,6 +113,12 @@ fn Parser::synchronize(p: Self) -> Unit {
 
 ///| expression → conditional ( "," conditional )*
 pub fn Parser::expression(p: Self) -> Expression raise ParserError {
+    if p.peek().token_type is TokenType::COMMA {
+        let operator = p.advance()
+        p.report_error(operator, "Missing left operand for '\{operator.lexeme}' operator.")
+        ignore(p.conditional())
+    }
+
     let mut expr = p.conditional()
 
     while p.matchTo([TokenType::COMMA]) {
@@ -134,6 +146,12 @@ fn Parser::conditional(p: Self) -> Expression raise ParserError {
 
 ///| equality → comparison ( ( "!=" | "==" ) comparison )*
 fn Parser::equality(p: Self) -> Expression raise ParserError {
+    if p.peek().token_type is (TokenType::BANG_EQUAL | TokenType::EQUAL_EQUAL) {
+        let operator = p.advance()
+        p.report_error(operator, "Missing left operand for '\{operator.lexeme}' operator.")
+        ignore(p.comparison())
+    }
+
     let mut expr = p.comparison()
 
     while p.matchTo([TokenType::BANG_EQUAL, TokenType::EQUAL_EQUAL]) {
@@ -147,6 +165,12 @@ fn Parser::equality(p: Self) -> Expression raise ParserError {
 
 ///| comparison → term ( ( ">" | ">=" | "<" | "<=" ) term )*
 fn Parser::comparison(p: Self) -> Expression raise ParserError {
+    if p.peek().token_type is (TokenType::GREATER | TokenType::GREATER_EQUAL | TokenType::LESS | TokenType::LESS_EQUAL) {
+        let operator = p.advance()
+        p.report_error(operator, "Missing left operand for '\{operator.lexeme}' operator.")
+        ignore(p.term())
+    }
+
     let mut expr = p.term()
 
     while p.matchTo([TokenType::GREATER, TokenType::GREATER_EQUAL, TokenType::LESS, TokenType::LESS_EQUAL]) {
@@ -163,6 +187,12 @@ fn Parser::comparison(p: Self) -> Expression raise ParserError {
 
 ///| term → factor ( ( "-" | "+" ) factor )*
 fn Parser::term(p: Self) -> Expression raise ParserError {
+    while p.peek().token_type is TokenType::PLUS {
+        let operator = p.advance()
+        p.report_error(operator, "Missing left operand for '\{operator.lexeme}' operator.")
+        ignore(p.factor())
+    }
+
     let mut expr = p.factor()
 
     while p.matchTo([TokenType::MINUS, TokenType::PLUS]) {
@@ -176,6 +206,12 @@ fn Parser::term(p: Self) -> Expression raise ParserError {
 
 ///| factor → unary ( ( "/" | "*" ) unary )*
 fn Parser::factor(p: Self) -> Expression raise ParserError {
+    if p.peek().token_type is (TokenType::SLASH | TokenType::STAR) {
+        let operator = p.advance()
+        p.report_error(operator, "Missing left operand for '\{operator.lexeme}' operator.")
+        ignore(p.unary())
+    }
+
     let mut expr = p.unary()
 
     while p.matchTo([TokenType::SLASH, TokenType::STAR]) {
